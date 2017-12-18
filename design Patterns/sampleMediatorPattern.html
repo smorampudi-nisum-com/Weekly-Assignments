@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+
+var Mediator = function () {
+    // private
+    var components = {};
+    // public
+    return {
+        /*
+         * Initialization method       
+         */
+        init : function ()
+        {
+            /*
+             * Broadcast 'init' event to initialize all components
+             */
+            this.broadcastEvent('init',this);
+        },
+       
+        /*
+         * Adds a component to the components associative array
+         *
+         * @param     name {string}    the key reference for the component
+         * @param     component {object}    an function literal object          
+         */
+        addComponent : function (name, component)
+        {
+            // ensure that component is not already in associative array
+            for (var k in components)
+            {
+                if (components[k] === component)
+                {
+                    break;
+                }   
+            }
+            components[name] = component;
+        },
+       
+        /*
+         * Removes a component from the associative array
+         *
+         * @param     name {string}    an function literal object
+         *            
+         */
+        removeComponent : function (name)
+        {
+            for (var k in components)
+            {
+                // if component match found, remove it
+                if (components[k] === name)
+                {
+                    delete components[k];
+                }
+            }
+        },
+       
+        /*
+         * Provides a general event broadcast implementation
+         *
+         * @param    event {string} the event to broadcast
+         * @param    source {object} the source object broadcasting the event
+         */
+        broadcastEvent : function (event,source)
+        {
+            for (var k in components)
+            {
+                // if component implements the event as a function, call it
+                if (typeof components[k][event] === 'function')
+                {
+                    components[k][event](source);
+                }
+            }       
+        }      
+    };
+}();
+//Here is the code for the Layout object.
+Mediator.addComponent('Layout', function () {
+    // private
+    var mediator= null;
+    var setMediator = function (m) {
+            mediator = m;
+        };
+    var getMediator = function () {
+            return mediator;
+        };
+    var layout = null;
+    var render = function () {
+       layout = new Ext.BorderLayout(document.body, {
+                north: { split: false, initialSize: 29 },
+                center: { titlebar: false, tabPosition: 'top' }
+            });
+            layout.beginUpdate();
+            layout.add('north', new Ext.ContentPanel('north-div', { fitToFrame: true, closable: false }));
+            layout.add('center', new Ext.ContentPanel('center-form', { fitToFrame: false, title: 'Form', closable: false }));
+            layout.add('center', new Ext.ContentPanel('center-report', { fitToFrame: false, title: 'Report', closable: false }));
+            layout.add('center', new Ext.ContentPanel('center-listing', { fitToFrame: false, title: 'Listing', closable: false }));
+               layout.getRegion('center').showPanel('center-form');
+            layout.endUpdate();   
+        };
+    // public
+    return {
+        init : function(m) {
+               setMediator(m);
+               render();
+        }
+    }
+}());
+</script>
+
+</body>
+</html>
