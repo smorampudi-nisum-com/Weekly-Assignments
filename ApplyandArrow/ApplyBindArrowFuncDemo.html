@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<title>Call Bind Apply Arrow Function</title>
+<body>
+<script>
+	var minimum = {
+		a: 12,
+		go: function add(b,c,d)
+		{
+			alert((this.a+b+c+d));
+		}
+	}
+	var large={
+		a:100
+	}
+
+	minimum.go(2,3,4);
+	minimum.go.apply(large, [2,3,4]);
+
+
+	minimum.go(2,5,4);
+	// logs 1+2+3+4 => 10
+	var bindTest = minimum.go.bind(large,2);
+	console.log(bindTest);
+	// logs => function (b,c,d){console.log(this.a+b+c+d);}
+	bindTest(7,4);
+	// logs 100+2+3+4 => 109
+
+	function Counter()
+	{
+		this.num = 0;
+
+		this.timer = setInterval(() => {
+			this.num++;
+			console.log(this.num);
+		}, 1000);
+	}
+
+	var b = new Counter();
+
+
+</script>
+
+</body>
+</html>
