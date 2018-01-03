@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+
+function pubsub(obj) {
+
+var events = {},
+    subUid = -1;
+
+obj.publish = function (event, args) {
+
+    if (!events[event]) {
+        return false;
+    }
+
+    var subscribers = events[event],
+    len = subscribers ? subscribers.length : 0;
+
+    while (len--) {
+        subscribers[len].func(event, args);
+    }
+};
+
+obj.subscribe = function (event, func) {
+
+    if (!events[event]) {
+        events[event] = [];
+    }
+
+    var token = (++subUid).toString();
+    events[event].push({
+        token: token,
+        func: func
+    });
+
+    return token;
+
+};
+
+obj.unsubscribe = function (token) {
+
+    for (var event in events) {
+        if (events.hasOwnProperty(event)) {
+            for (var i = 0, j = events[event].length ; i < j ; i++) {
+                if (events[event][i].token === token) {
+                    events[event].splice(i, 1);
+                }
+            }
+        }
+    }
+
+    return this;
+
+};
+
+}
+
+var obj = {}; // Any javascript object
+pubsub(obj); // Make an observable from the given object
+
+var subscription = obj.subscribe('load', handler);
+
+// event handler callback
+function handler(event, data) {
+    console.log(event, data);
+}
+
+obj.publish('load', 'Data loaded successfully'); // logs 'load Data loaded successfully'
+obj.unsubscribe(subscription);
+obj.publish('load', 'Data loaded successfully'); // nothing happens
+</script>
+
+</body>
+</html>
