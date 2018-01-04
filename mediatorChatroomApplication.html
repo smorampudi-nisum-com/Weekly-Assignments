@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+var participant = function(name) {
+ this.name = name;
+this.chatroom = null;
+};
+
+participant.prototype = {
+	send:function(message, to) {
+		this.chatroom.send(message, this, to);
+	},
+	receive: function(message, from) {
+		console.log(from.name +" "+ "to"+ " " +this.name+": " + message);
+	}
+};
+
+var chatroom = function() {
+	var participants = {};
+
+return {
+	register: function(participant) {
+		participants[participant.name] = participant;
+		participant.chatroom = this;
+		},
+
+	send: function(message, from, to) {
+		if (to) {
+			to.receive(message, from);
+		} else {
+			for(key in participants) {
+			 if(participants[key] != from) {
+				participants[key].receive(message, from);
+			}
+			}
+		}
+	}
+	};
+};
+
+var sam = new participant("sam");
+var santhu = new participant("santhu");
+var sm = new participant("smorampudi");
+
+var chatroom1 = new chatroom();
+chatroom1.register(sam);
+chatroom1.register(santhu);
+chatroom1.register(sm);
+
+sm.send("How is it going?");
+sam.send("fine sm", sm);
+santhu.send("Hey! you are still alive", sm);
+</script>
+
+</body>
+</html>
+
+
